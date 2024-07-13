@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>一生储蓄估算器</title>
+    <script>
+        function calculateSavings() {
+            const age = parseInt(document.getElementById("age").value);
+            const currentIncome = parseFloat(document.getElementById("income").value);
+
+            if (isNaN(age) || isNaN(currentIncome) || age < 22 || age > 65) {
+                alert("请输入有效的年龄（22-65岁）和收入！");
+                return;
+            }
+
+            let totalSavings = 0;
+
+            // Parameters for each career stage
+            const stages = [
+                { startAge: 22, endAge: 35, taxRate: 0.20, savingsRate: 0.20, growthRate: 0.02 },
+                { startAge: 36, endAge: 50, taxRate: 0.25, savingsRate: 0.30, growthRate: 0.03 },
+                { startAge: 51, endAge: 65, taxRate: 0.30, savingsRate: 0.40, growthRate: 0.02 }
+            ];
+
+            let income = currentIncome;
+
+            // Calculate savings for each stage
+            stages.forEach(stage => {
+                if (age <= stage.endAge) {
+                    for (let currentAge = Math.max(age, stage.startAge); currentAge <= stage.endAge; currentAge++) {
+                        const afterTaxIncome = income * (1 - stage.taxRate);
+                        const annualSavings = afterTaxIncome * stage.savingsRate;
+                        totalSavings += annualSavings;
+                        income *= (1 + stage.growthRate);
+                    }
+                } else {
+                    income *= Math.pow(1 + stage.growthRate, stage.endAge - stage.startAge + 1);
+                }
+            });
+
+            document.getElementById("result").innerText = "预计一生储蓄: " + totalSavings.toFixed(2) + " 元";
+        }
+    </script>
+</head>
+<body>
+    <h1>一生储蓄估算器</h1>
+    <label for="age">年龄:</label>
+    <input type="number" id="age" name="age" min="22" max="65" required>
+    <br><br>
+    <label for="income">当前税前收入 (元):</label>
+    <input type="number" id="income" name="income" required>
+    <br><br>
+    <button onclick="calculateSavings()">估算储蓄</button>
+    <p id="result"></p>
+</body>
+</html>
